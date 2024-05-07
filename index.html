@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deposit Protection Fund</title>
+
+<!-- for proper rendering on mobile devices -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<!-- xxxxxxxxxxESRIxxxxxxxxxxx -->  
+<!--link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/-->
+<!-- xxxxxxxxxxESRIxxxxxxxxxxx -->    
+    
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.css" />
+<link rel="stylesheet" href="MarkerCluster.css" />
+	
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+
+
+    	
+<link rel="stylesheet" href="MarkerCluster.Default.css" />
+<link rel="stylesheet" href="src/leaflet-search.css" />
+
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>   
+<link rel="stylesheet" href="src/Leaflet.Mapcodes.css" />
+<link rel="stylesheet" href="dist/leaflet-search.src.css" />
+<link rel="stylesheet" href="dist/leaflet-search.min.css" />
+
+<link rel="stylesheet" href="src/L.Control.MousePosition.css" />
+<link rel="stylesheet" href="src/L.Control.Locate.css" />
+
+<link rel="stylesheet" href="src/leaflet.measure.css"/>
+
+<link rel="stylesheet" href="http://leaflet.github.io/Leaflet.draw/leaflet.draw.css"/>
+
+<link rel="stylesheet" href="src/leaflet.zoomhome.css"/>
+
+<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" />
+
+<link rel="stylesheet" href="style.css" />
+
+</head>
+<h3>Deposit Protection Fund</h3>
+<body>
+
+  <label for = "Lat:">Lat:</label>
+  <input type="text"  name="lat" id="lat" size="8"/>
+  
+  <label for = "Lon:">Lon:</label>
+  <input type="text"  name="lng" id="lng" size="8"/>
+  
+  <input type="button" onclick="zoomTo()" value="GoTo"/>
+	
+  <div id="map" style="width: 1300px; height: 570px"></div>
+  
+
+           
+  <script src="https://unpkg.com/leaflet@1.3.0/dist/leaflet.js"></script>  
+  <script src="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.js"></script>    
+  
+  <script src="points_rand.js"></script>
+  <script src="leaflet.markercluster-src.js"></script>
+  
+  <script src="src/leaflet-heat.js"></script>
+  <script src="leaflet.ajax.min.js"></script>
+  
+  <script src="src/react-leaflet-easyprint.js"></script>
+  <script src="src/react-leaflet-easyprint.min.js"></script>
+
+  <script src="src/L.Control.MousePosition.js"></script>  
+  <script src="src/L.Control.Locate.js"></script>
+  
+  <script src="src/leaflet.measure.js"></script>
+  
+  <script type="text/javascript" src="src/Leaflet.Mapcodes.js"></script> 
+  <script type="text/javascript" src="mapcode-js/ndata.js"></script>
+  <script type="text/javascript" src="mapcode-js/ctrynams.js"></script>
+  <script type="text/javascript" src="mapcode-js/mapcode.js"></script>
+  
+  <script src="src/leaflet-search.js"></script>
+  <script src="src/leaflet-search-geocoder.js"></script>
+  
+  <script src="dist/leaflet-search.src.js"></script>
+  <script src="dist/leaflet-search.min.js"></script>
+  
+  <script src="http://leaflet.github.io/Leaflet.draw/leaflet.draw.js"></script>
+  
+  <script src="src/leaflet.zoomhome.min.js"></script>
+  
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
+  
+  <script src="points_dpf.js"></script>
+  
+ <!-- xxxxxxxxxxESRIxxxxxxxxxxx --> 
+  <!--script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script-->
+  <!--script src="https://unpkg.com/leaflet/dist/leaflet.js"></script--> 
+ <!-- xxxxxxxxxxESRIxxxxxxxxxxx --> 
+    
+ <script>
+	
+	////////////////////////////////////////////////////////
+	
+	///////////////////////////////////////////////////////
+	
+	var map = L.map('map',{zoomControl: false}).setView([0.3218, 32.6044], 15);
+
+	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 20,
+	minZoom: 1
+    }).addTo(map);
+    
+    //var map = L.map('map').setView([0.3218, 32.6044], 15);
+    //L.esri.basemapLayer("Gray").addTo(map);
+      
+    var zoomHome = L.Control.zoomHome();
+    zoomHome.addTo(map);
+    
+    //////////////////////////////////////////////////////////////////////////////////////////
+    
+    
+    //L.esri.featureLayer({url: "http://10.99.99.67/arcgis/rest/services/Website_map/MapServer/2"}).addTo(map);
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    
+    
+    
+    L.control.measure({
+        //  control position
+        position: 'topleft',
+        //  weather to use keyboard control for this plugin
+        keyboard: true,
+        //  shortcut to activate measure
+        activeKeyCode: 'M'.charCodeAt(0),
+        //  shortcut to cancel measure, defaults to 'Esc'
+        cancelKeyCode: 27,
+        //  line color
+        lineColor: 'red',
+        //  line weight
+        lineWeight: 2,
+        //  line dash
+        lineDashArray: '6, 6',
+        //  line opacity
+        lineOpacity: 1
+      }).addTo(map)
+	///////////////////////////////////////////////////////
+	var markers = L.markerClusterGroup();
+	var markers2 = L.markerClusterGroup();
+	var markers3 = L.markerClusterGroup();
+	var markers4 = L.markerClusterGroup();
+	//////////////////////////////////////////////////	
+
+	var points_rand = L.geoJson(points, {
+       	
+		  style: function style(feature) {
+				return {
+					fillColor: getColor(feature.properties.days_no_ve),
+					//weight: 2,
+					//opacity: 1,
+					//color: 'white',
+					//dashArray: '3',
+					fillOpacity: 0.7
+				};
+			},
+			
+		   pointToLayer: function(feature, latlng) 
+		   
+			{
+				return L.circleMarker(latlng, {
+					
+					//radius: feature.properties.days_no_ve / 20
+					
+					});
+			},
+		       
+		onEachFeature: function (feature, layer) //functionality on click on feature
+			{
+			
+			var popupText = "<b>" + "Zero Vend" + "<br>"
+
+			  +"<small>" + "<br>District: " +feature.properties.district + "<br>Tariff: " + feature.properties.tariff +"<br>Customer Name: " + feature.properties.customerna +"<br>Customer No: " + feature.properties.customerno + "<br>Meter No: " + feature.properties.meterno + "<br>Last Vending Days: " + feature.properties.days_no_ve;
+			  layer.bindPopup(popupText);
+	
+			}	
+				
+
+		});
+		///////////////////////////////////////////		
+		var Customers0to90days = L.geoJson(points, {
+    
+		filter: function(feature, layer) {
+                return (feature.properties.days_no_ve > 0 && feature.properties.days_no_ve <= 90);
+                },
+                 
+        onEachFeature: function (feature, layer) //functionality on click on feature
+			{
+			
+			var popupText = "<b>" + "Zero Vend" + "<br>"
+
+			  +"<small>" + "<br>District: " +feature.properties.district + "<br>Tariff: " + feature.properties.tariff +"<br>Customer Name: " + feature.properties.customerna +"<br>Customer No: " + feature.properties.customerno + "<br>Meter No: " + feature.properties.meterno + "<br>Last Vending Days: " + feature.properties.days_no_ve;
+			  layer.bindPopup(popupText);
+          
+			}     
+		
+		});
+		//////////////////////////////////////////////////////////////
+		var Customers90to180days = L.geoJson(points, {
+    
+		filter: function(feature, layer) {
+                return (feature.properties.days_no_ve > 90 && feature.properties.days_no_ve <= 180);
+                },
+                
+        onEachFeature: function (feature, layer) //functionality on click on feature
+			{
+			
+			var popupText = "<b>" + "Zero Vend" + "<br>"
+
+			  +"<small>" + "<br>District: " +feature.properties.district + "<br>Tariff: " + feature.properties.tariff +"<br>Customer Name: " + feature.properties.customerna +"<br>Customer No: " + feature.properties.customerno + "<br>Meter No: " + feature.properties.meterno + "<br>Last Vending Days: " + feature.properties.days_no_ve;
+			  layer.bindPopup(popupText);
+          
+			}        
+		
+		});
+		
+		/////////////////////////////////////////////////////////////////////
+		var Customersbeyond180days = L.geoJson(points, {
+    
+		filter: function(feature, layer) {
+                return (feature.properties.days_no_ve > 180);
+                }, 
+                
+        onEachFeature: function (feature, layer) //functionality on click on feature
+			{
+			
+			var popupText = "<b>" + "Zero Vend" + "<br>"
+
+			  +"<small>" + "<br>District: " +feature.properties.district + "<br>Tariff: " + feature.properties.tariff +"<br>Customer Name: " + feature.properties.customerna +"<br>Customer No: " + feature.properties.customerno + "<br>Meter No: " + feature.properties.meterno + "<br>Last Vending Days: " + feature.properties.days_no_ve;
+			  layer.bindPopup(popupText);
+          
+			}        
+		
+		});
+	////////////////////////////////////////////////	
+	var coords = [];
+	var HeatLayer = L.geoJson(points, {
+		
+	onEachFeature: function (feature, layer) 
+		
+		{
+				coords.push(feature.geometry.coordinates.reverse());				
+				return coords;				
+		}
+
+	});
+
+	var heat = L.heatLayer(coords, {radius: 25});
+	
+	map.addLayer(heat);
+	///////////////////////////////////////////////////////////////////////////////
+	
+	markers.addLayer(points_rand);
+	
+	
+		
+	markers2.addLayer(Customers0to90days);
+	markers3.addLayer(Customers90to180days);
+	markers4.addLayer(Customersbeyond180days);
+
+	
+	map.addLayer(markers);		// add it to the map
+	//map.addLayer(HeatLayer);
+	//map.addLayer(markers2);   //dont add so that you add manually using check box
+	//map.addLayer(markers3);   //dont add so that you add manually using check box
+	//map.addLayer(markers4);   //dont add so that you add manually using check box
+	
+	map.fitBounds(markers.getBounds()); //set view on the cluster extend
+	
+	///////////////////////////////////////////////////////////////
+	
+	var overlays = {
+     "Zero Vend Customers": markers
+	};
+	
+	var overlays2 = {
+     "0 - 90 Days": markers2,
+     "90 - 180 Days": markers3,
+     "Beyond 180 Days": markers4
+	};
+	
+    //set color of marker function
+
+	function getColor(d) {
+    return (d > 360) ? 'red' :
+           (d > 180 && d <= 360) ? 'light blue' :
+           (d > 90 && d <= 180)  ? 'purple' :
+           (d > 0 && d <= 90)  ? 'green' :
+                     'white' ;
+	}
+	
+	var legend = L.control({position: 'bottomright'});
+	
+    legend.onAdd = function(map) {
+
+	var div = L.DomUtil.create('div', 'info legend'),
+				grades = [0, 90, 180, 360],
+				labels = [],
+				from, to;
+
+			for (var i = 0; i < grades.length; i++) {
+				from = grades[i];
+				to = grades[i + 1];
+
+				labels.push('<i style="background:' + getColor(from + 1) + '"></i> ' + from + (to ? '&ndash;' + to : '+'));
+			}
+
+			div.innerHTML = labels.join('<br>');
+			return div;
+	};
+
+    legend.addTo(map);
+
+    ///////////////////////////////////////////////////////////////	
+    //  Display locate Control
+    var locateControl = new L.Control.Locate({follow: true, setView: true, position: 'topleft'});
+    
+	L.control.layers(null, overlays,{collapsed:false}).addTo(map);
+	
+	L.control.layers(null, overlays2,{collapsed:false,hidden:false}).addTo(map);
+	
+	L.control.scale({imperial: false}).addTo(map);
+	
+	L.control.mousePosition({position : 'bottomright'}).addTo(map);
+	L.control.mapcodes({position : 'bottomright'}).addTo(map);
+	L.easyPrint({title: 'Print',position: 'topleft',elementsToHide: 'p, h2'}).addTo(map);
+	
+	////////////////////////////////////////////////////////////////
+	var searchControl = new L.Control.Search({
+		
+		layer: markers,		
+		propertyName: 'customerno',
+		marker: false,
+		moveToLocation: function(latlng) {
+			//map.fitBounds( latlng.layer.getBounds() );
+			//var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+  			map.setView(latlng, 12); // access the zoom
+		}
+	});
+
+	searchControl.on('search:locationfound', function(e) {
+		
+		e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
+		if(e.layer._popup)
+			e.layer.openPopup();
+
+	}).on('search:collapsed', function(e) {
+
+		markers.eachLayer(function(layer) {	//restore feature color
+			markers.resetStyle(layer);
+		});	
+	});
+	
+	//////////////////////////////////////////////////////////////////////////
+	var searchControl2 = new L.Control.Search({
+		
+		layer: markers2,		
+		propertyName: 'customerno',
+		marker2: false,
+		moveToLocation: function(latlng) {
+			//map.fitBounds( latlng.layer.getBounds() );
+			//var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+  			map.setView(latlng, 12); // access the zoom
+		}
+	});
+
+	searchControl2.on('search:locationfound', function(e) {
+		
+		e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
+		if(e.layer._popup)
+			e.layer.openPopup();
+
+	}).on('search:collapsed', function(e) {
+
+		markers2.eachLayer(function(layer) {	//restore feature color
+			markers2.resetStyle(layer);
+		});	
+	});
+	
+	//////////////////////////////////////////////////////////////////////////
+	var searchControl3 = new L.Control.Search({
+		
+		layer: markers3,		
+		propertyName: 'customerno',
+		marker3: false,
+		moveToLocation: function(latlng) {
+			//map.fitBounds( latlng.layer.getBounds() );
+			//var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+  			map.setView(latlng, 12); // access the zoom
+		}
+	});
+
+	searchControl3.on('search:locationfound', function(e) {
+		
+		e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
+		if(e.layer._popup)
+			e.layer.openPopup();
+
+	}).on('search:collapsed', function(e) {
+
+		markers3.eachLayer(function(layer) {	//restore feature color
+			markers3.resetStyle(layer);
+		});	
+	});
+	
+	//////////////////////////////////////////////////////////////////////////
+	var searchControl4 = new L.Control.Search({
+		
+		layer: markers4,		
+		propertyName: 'customerno',
+		marker4: false,
+		moveToLocation: function(latlng) {
+			//map.fitBounds( latlng.layer.getBounds() );
+			//var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+  			map.setView(latlng, 12); // access the zoom
+		}
+	});
+
+	searchControl4.on('search:locationfound', function(e) {
+		
+		e.layer.setStyle({fillColor: '#3f0', color: '#0f0'});
+		if(e.layer._popup)
+			e.layer.openPopup();
+
+	}).on('search:collapsed', function(e) {
+
+		markers4.eachLayer(function(layer) {	//restore feature color
+			markers4.resetStyle(layer);
+		});	
+	});
+	
+	/////////////////////////////////////////////////////////////////////////
+	function zoomTo() {
+        var lat = document.getElementById("lat").value;
+        var lng = document.getElementById("lng").value;
+        map.panTo(new L.LatLng(lat, lng));
+    }   
+	//////////////////////////////////////////////////////////////////////////	
+	map.addControl(searchControl);  //inizialize search control
+	map.addControl(locateControl);
+	
+	////////////////////////////////////////////////////////
+	
+</script>
+  
+  <!--div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div-->
+
+<script type="text/javascript" src="/labs-common.js"></script>
+
+</body>
+</html>
